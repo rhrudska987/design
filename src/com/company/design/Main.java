@@ -1,40 +1,32 @@
 package com.company.design;
 
-import com.company.design.adapter.Electronic110V;
-import com.company.design.aop.AopBrowser;
-import com.company.design.proxy.IBrowser;
-
-import java.util.concurrent.atomic.AtomicLong;
+import com.company.design.strategy.Base64Strategy;
+import com.company.design.strategy.Encoder;
+import com.company.design.strategy.EncodingStrategy;
+import com.company.design.strategy.NormalStrategy;
 
 public class Main {
 
     public static void main(String[] args) {
+        Encoder encoder = new Encoder();
 
-        //IBrowser browser = new BrowserProxy("www.naver.com");
-        //browser.show();
+        //base64
+        EncodingStrategy base64 = new Base64Strategy();
 
-        AtomicLong start = new AtomicLong();
-        AtomicLong end = new AtomicLong();
+        //normal
+        EncodingStrategy normal = new NormalStrategy();
 
-        IBrowser aopBrowser = new AopBrowser("www.naver.com",
-                ()->{
-                    System.out.println("before");
-                    start.set(System.currentTimeMillis());
-                },
-                ()->{
-                    long now = System.currentTimeMillis();
-                    end.set(now - start.get());
-                }
-        );
+        String message = "hello java";
+        encoder.setEncodingStrategy(base64);
+        String base64Result = encoder.getMessage(message);
+        System.out.println(base64Result);
 
-        aopBrowser.show();
-        System.out.println("loading time : " + end.get());
+        encoder.setEncodingStrategy(normal);
+        String normalResult = encoder.getMessage(message);
+        System.out.println(normalResult);
 
-        aopBrowser.show();
-        System.out.println("loading time : " + end.get());
-    }
-    //콘센트
-    public static void connect(Electronic110V electronic110V){
-        electronic110V.powerOn();
+        encoder.setEncodingStrategy(new AppendStrategy());
+        String appendResult = encoder.getMessage(message);
+        System.out.println(appendResult);
     }
 }
